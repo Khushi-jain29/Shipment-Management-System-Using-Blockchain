@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TA Management Suite - TA Applicant</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+  <link rel="stylesheet" href="{{ url_for('static',filename='styles/style.css') }}">
+
+</head>
+
+
+<body>
+  <!-- Top Navigation Bar -->
+  <header class="top-nav">
+    <img src="{{ url_for('static',filename='logo.png') }}" alt="University Logo" class="logo">
+    <nav class="nav-links">
+      <a href="#" onclick="showSection('application')">Submit Application</a>
+      <a href="#" onclick="showSection('status')">Check Status</a>
+      <a href="#" onclick="showSection('data')">Your Data</a>
+      <a href="#" onclick="showSection('notifications')">Notifications</a>
+      <a href="http://localhost:5555/TAManagementSuite/home">Logout</a>
+    </nav>
+  </header>
+
+  <!-- Main Content Container -->
+  <div class="container" id="main-content">
+    <!-- Initial content or welcome message -->
+    <section class="form-container welcome-section">
+      <h2>Welcome to the TA Applicant Portal</h2>
+      <p>Please choose an option from the top menu.</p>
+    </section>
+  </div>
+
+  <footer>
+    <p>&copy; 2023 Florida Atlantic University</p>
+  </footer>
+
+  <script>
+    function showSection(section) {
+      var mainContent = document.getElementById('main-content');
+      mainContent.innerHTML = ''; // Clear current content
+
+      if (section === 'application') {
+        mainContent.innerHTML = `
+          <section class="form-container">
+            <h2>Submit a Fresh Application</h2>
+            <form class="form" action="http://localhost:5555/TAManagementSuite/TAApplicant/SubmitApplication" method ="get">
+              <input type="text" placeholder="StudentID" name="student_id" required>
+              <input type="email" placeholder="Email" name="email" required>
+              <input type="text" placeholder="CourseID" name="course_id" required>
+              <textarea placeholder="Skills" name="skills" required></textarea>
+              <textarea placeholder="Additional Information" name="additionalInfo"></textarea>
+              <input type="file" name="CV" required>
+              <button class="action-button" type="submit">Submit Application</button>
+            </form>
+          </section>
+        `;
+      } else if (section === 'status') {
+        mainContent.innerHTML = `
+          <section class="form-container">
+            <h2>Check Status of Your Submitted Application by Course</h2>
+            <form class="form" action="http://localhost:5555/TAManagementSuite/TAApplicant/CheckStatus" method ="get"">
+              <input type="text" placeholder="Course ID" name="course_id" required>
+              <button class="action-button" type="submit">Check Status</button>
+            </form>
+          </section>
+        `;
+      } else if (section === 'data') {
+        mainContent.innerHTML = `
+          <section class="form-container">
+            <h2>Your Data & Previous Experiences</h2>
+            <form class="form" action="http://localhost:5555/TAManagementSuite/TAApplicant/YourData" method ="get"">
+              <button class="action-button" type="submit">Get My Data</button>
+            </form>
+          </section>
+        `;
+      } else if (section === 'notifications') {
+        mainContent.innerHTML = `
+          <section class="form-container">
+            <h2>Notifications</h2>
+            <!-- Content showing the applicant's notifications -->
+            <p>No new notifications.</p>
+          </section>
+        `;
+      }
+    }
+  </script>
+</body>
+</html>

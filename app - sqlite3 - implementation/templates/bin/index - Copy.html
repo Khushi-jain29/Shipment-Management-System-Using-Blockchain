@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="login-container">
+        <header>
+            <img src="logo.png" alt="University Logo">
+            <h1>FLORIDA ATLANTIC UNIVERSITY</h1>
+            <div class="header-links">
+                <a href="#">Help Desk</a> | 
+                <a href="#">System Status</a>
+            </div>
+        </header>
+        <section class="login-form">
+            <h2>SIGN IN WITH YOUR FAUNET ID</h2>
+            <input type="text" id="username" placeholder="FAU Net ID">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="login()">LOGIN</button>
+            <label><input type="checkbox" id="rememberMe"> Don't Remember Login</label>
+            <div class="login-help">
+                <a href="#">Forgot your password?</a>
+                <a href="#">Set Up a New Account</a>
+                <a href="#">Need Help?</a>
+            </div>
+        </section>
+        <aside class="new-account">
+            <h2>NEW HERE?</h2>
+            <p>Activate your FAU account to start using single sign-on.</p>
+            <button onclick="activateAccount()">ACTIVATE ACCOUNT</button>
+            <p>For other account resources, visit <a href="#">Accounts</a>.</p>
+        </aside>
+        <footer>
+            <p>&copy; 2023 Florida Atlantic University</p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

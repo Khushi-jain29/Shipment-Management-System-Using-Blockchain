@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Seller Dashboard - LogisticsCo</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding-bottom: 60px; /* Add padding to prevent content from being hidden behind the footer */
+      background-color: #f4f4f4;
+    }
+    .header {
+      background-color: #d52b1e;
+      color: white;
+      text-align: center;
+      padding: 10px 0;
+      position: relative;
+    }
+    .header img {
+      width: 50px;
+      height: auto;
+      position: absolute;
+      left: 20px;
+      top: 10px;
+    }
+    .top-nav {
+      background-color: #333;
+      overflow: hidden;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .top-nav a {
+      flex: 1;
+      min-width: 120px;
+      color: white;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+    .top-nav a:hover {
+      background-color: #ddd;
+      color: black;
+    }
+    .active-tab {
+      background-color: #4CAF50;
+      color: white;
+    }
+    .container {
+      padding: 20px;
+      background-color: white;
+      max-width: 1200px;
+      margin: 20px auto;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+    footer {
+      text-align: center;
+      padding: 10px;
+      background-color: #333;
+      color: white;
+      position: relative;
+      width: 100%;
+      margin-top: 20px;
+    }
+    input[type="text"], input[type="password"], button, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .product-section, .order-section, .shipment-section, .profile-section, .contract-section {
+      background-color: white;
+      border-radius: 6px;
+      padding: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      margin-top: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      table-layout: fixed; /* Fix the rotating issue */
+    }
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      word-wrap: break-word; /* Ensure content wraps inside the table cells */
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    @media (max-width: 768px) {
+      .top-nav a {
+        flex: 100%;
+        text-align: left;
+        padding-left: 20px;
+      }
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      background-color: rgba(0,0,0,0.4);
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 60%;
+      border-radius: 8px;
+    }
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header Section -->
+  <header class="header">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Company Logo">
+    <h1>Seller Dashboard - LogisticsCo</h1>
+  </header>
+
+  <!-- Navigation Bar -->
+  <nav class="top-nav">
+    <a href="#" onclick="showSection('products')" id="products-tab">Manage Products</a>
+    <a href="#" onclick="showSection('orders')" id="orders-tab">Manage Orders</a>
+    <a href="#" onclick="showSection('initiate-shipment')" id="initiate-shipment-tab">Initiate Shipment</a>
+    <a href="#" onclick="showSection('shipment-status')" id="shipment-status-tab">View Shipment Status</a>
+    <a href="#" onclick="showSection('contracts')" id="contracts-tab">Smart Contracts</a>
+    <a href="#" onclick="showSection('profile')" id="profile-tab">Profile</a>
+    <a href="/ShipmentManagementSystem/Logout">Logout</a>
+  </nav>
+
+  <!-- Main Content Area -->
+  <div class="container">
+    <div id="main-content">
+      <!-- Dynamic content will be loaded here based on the selected section -->
+      <h2>Welcome to LogisticsCo Seller Dashboard</h2>
+      <p>Select an option from the menu to get started.</p>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2024 Shipment Tracking System</p>
+  </footer>
+
+  <!-- Modals -->
+  <!-- Add/Edit Product Modal -->
+  <div id="product-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeProductModal()">&times;</span>
+      <h2 id="product-modal-title">Add New Product</h2>
+      <input type="hidden" id="productID">
+      <input type="text" id="productName" placeholder="Product Name">
+      <textarea id="productDescription" placeholder="Product Description"></textarea>
+      <input type="text" id="price" placeholder="Price">
+      <input type="text" id="brand" placeholder="Brand">
+      <input type="text" id="category" placeholder="Category">
+      <input type="text" id="modelName" placeholder="Model Name">
+      <input type="text" id="shipsFrom" placeholder="Ships From">
+      <input type="text" id="soldBy" placeholder="Sold By">
+      <input type="text" id="warrantyPolicy" placeholder="Warranty Policy">
+      <input type="text" id="productImageUrl" placeholder="Product Image URL">
+      <textarea id="additionalFeatures" placeholder="Additional Features"></textarea>
+      <button onclick="saveProduct()">Save Product</button>
+    </div>
+  </div>
+
+  <!-- Order Details Modal -->
+  <div id="order-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeOrderModal()">&times;</span>
+      <h2>Order Details</h2>
+      <div id="order-details"></div>
+    </div>
+  </div>
+
+  <!-- JavaScript Functions -->
+  <script>
+    function showSection(sectionId) {
+      var content = document.getElementById('main-content');
+      var tabs = document.querySelectorAll('.top-nav a');
+      tabs.forEach(tab => tab.classList.remove('active-tab'));
+      document.getElementById(sectionId + '-tab').classList.add('active-tab');
+      
+      switch (sectionId) {
+        case 'products':
+          content.innerHTML = `
+            <h2>Manage Your Products</h2>
+            <button onclick="openProductModal()">Add New Product</button>
+            <div id="products-list" class="loader"></div>
+          `;
+          fetchProducts();
+          break;
+        case 'orders':
+          content.innerHTML = '<h2>Manage Orders</h2><div class="loader" id="orders-loader"></div>';
+          fetchOrders();
+          break;
+        case 'initiate-shipment':
+          content.innerHTML = `
+            <h2>Initiate Shipment</h2>
+            <p>Enter shipment details below:</p>
+            <input type="text" id="shipmentID" placeholder="Shipment ID">
+            <input type="text" id="trackingID" placeholder="Tracking ID">
+            <input type="text" id="orderRefNo" placeholder="Order Reference Number">
+            <input type="text" id="productID" placeholder="Product ID">
+            <input type="text" id="customerID" placeholder="Customer ID">
+            <input type="text" id="origin" placeholder="Origin">
+            <input type="text" id="destination" placeholder="Destination">
+            <input type="text" id="weight" placeholder="Weight (kg)">
+            <input type="text" id="dimensions" placeholder="Dimensions (LxWxH)">
+            <button onclick="initiateShipment()">Initiate Shipment</button>
+            <div id="shipment-result"></div>
+          `;
+          break;
+        case 'shipment-status':
+          content.innerHTML = `
+            <h2>View Shipment Status</h2>
+            <input type="text" id="trackingNumber" placeholder="Enter Tracking Number">
+            <button onclick="trackShipment()">Track</button>
+            <div id="tracking-result"></div>
+          `;
+          break;
+        case 'contracts':
+          content.innerHTML = '<h2>Smart Contracts</h2><div id="contracts-content" class="loader"></div>';
+          fetchSmartContracts();
+          break;
+        case 'profile':
+          content.innerHTML = '<h2>Your Profile</h2><div class="loader" id="profile-loader"></div>';
+          fetchProfile();
+          break;
+        default:
+          content.innerHTML = '<h2>Welcome</h2><p>Select an option from the menu.</p>';
+      }
+    }
+
+
+
+    // Add/Edit Product Modal Functions
+    function openProductModal(productID = '') {
+      var modal = document.getElementById('product-modal');
+      var modalTitle = document.getElementById('product-modal-title');
+      if (productID) {
+        modalTitle.innerText = 'Edit Product';
+        fetchProductDetails(productID);
+      } else {
+        modalTitle.innerText = 'Add New Product';
+        clearProductForm();
+      }
+      modal.style.display = 'block';
+    }
+
+    function closeProductModal() {
+      var modal = document.getElementById('product-modal');
+      modal.style.display = 'none';
+    }
+
+    function clearProductForm() {
+      document.getElementById('productID').value = '';
+      document.getElementById('productName').value = '';
+      document.getElementById('productDescription').value = '';
+      document.getElementById('price').value = '';
+      document.getElementById('brand').value = '';
+      document.getElementById('category').value = '';
+      document.getElementById('modelName').value = '';
+      document.getElementById('shipsFrom').value = '';
+      document.getElementById('soldBy').value = '';
+      document.getElementById('warrantyPolicy').value = '';
+      document.getElementById('productImageUrl').value = '';
+      document.getElementById('additionalFeatures').value = '';
+    }
+
+    function saveProduct() {
+      var productID = document.getElementById('productID').value;
+      var productData = {
+        ProductID: productID || generateUUID(),
+        ProductName: document.getElementById('productName').value,
+        ProductDescription: document.getElementById('productDescription').value,
+        Price: document.getElementById('price').value,
+        Brand: document.getElementById('brand').value,
+        Category: document.getElementById('category').value,
+        ModelName: document.getElementById('modelName').value,
+        ShipsFrom: document.getElementById('shipsFrom').value,
+        SoldBy: document.getElementById('soldBy').value,
+        WarrantyPolicy: document.getElementById('warrantyPolicy').value,
+        ProductImageUrl: document.getElementById('productImageUrl').value,
+        AdditionalFeatures: document.getElementById('additionalFeatures').value
+      };
+
+      if (productID) {
+        // Update product
+        fetch('/ShipmentManagementSystem/Seller/Products', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(productData)
+        })
+        .then(response => response.json())
+        .then(data => {
+          alert(data.message);
+          closeProductModal();
+          fetchProducts();
+        })
+        .catch(error => console.error('Error:', error));
+      } else {
+        // Add new product
+        fetch('/ShipmentManagementSystem/Seller/Products', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(productData)
+        })
+        .then(response => response.json())
+        .then(data => {
+          alert(data.message);
+          closeProductModal();
+          fetchProducts();
+        })
+        .catch(error => console.error('Error:', error));
+      }
+    }
+
+    function fetchProductDetails(productID) {
+      fetch('/ShipmentManagementSystem/Seller/Products?ProductID=' + encodeURIComponent(productID))
+        .then(response => response.json())
+        .then(product => {
+          document.getElementById('productID').value = product.ProductID;
+          document.getElementById('productName').value = product.ProductName;
+          document.getElementById('productDescription').value = product.ProductDescription;
+          document.getElementById('price').value = product.Price;
+          document.getElementById('brand').value = product.Brand;
+          document.getElementById('category').value = product.Category;
+          document.getElementById('modelName').value = product.ModelName;
+          document.getElementById('shipsFrom').value = product.ShipsFrom;
+          document.getElementById('soldBy').value = product.SoldBy;
+          document.getElementById('warrantyPolicy').value = product.WarrantyPolicy;
+          document.getElementById('productImageUrl').value = product.ProductImageUrl;
+          document.getElementById('additionalFeatures').value = product.AdditionalFeatures;
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function deleteProduct(productID) {
+      if (confirm('Are you sure you want to delete this product?')) {
+        fetch('/ShipmentManagementSystem/Seller/Products?ProductID=' + encodeURIComponent(productID), {
+          method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+          alert(data.message);
+          fetchProducts();
+        })
+        .catch(error => console.error('Error:', error));
+      }
+    }
+
+    // Fetch and display Orders
+    function fetchOrders() {
+      fetch('/ShipmentManagementSystem/Seller/Orders')
+        .then(response => response.json())
+        .then(data => {
+          displayOrders(data);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function displayOrders(orders) {
+      var content = document.getElementById('main-content');
+      document.getElementById('orders-loader').style.display = 'none';
+      if (orders.length === 0) {
+        content.innerHTML += '<p>No orders found.</p>';
+        return;
+      }
+      var html = '<table><tr><th>Shipment ID</th><th>Product ID</th><th>Status</th><th>Actions</th></tr>';
+      orders.forEach(function(order) {
+        html += `
+          <tr>
+            <td>${order.ShipmentID}</td>
+            <td>${order.ProductID}</td>
+            <td>${order.InitialStatus}</td>
+            <td><button onclick="manageOrder('${order.ShipmentID}')">View Details</button></td>
+          </tr>
+        `;
+      });
+      html += '</table>';
+      content.innerHTML += html;
+    }
+
+    function manageOrder(shipmentID) {
+      fetch('/ShipmentManagementSystem/Seller/ShipmentStatus?TrackingID=' + encodeURIComponent(shipmentID))
+        .then(response => response.json())
+        .then(data => {
+          displayOrderDetails(data);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function displayOrderDetails(history) {
+      var modal = document.getElementById('order-modal');
+      var content = document.getElementById('order-details');
+      if (history.error) {
+        content.innerHTML = `<p>${history.error}</p>`;
+      } else {
+        var html = '<table><tr><th>Date & Time</th><th>Status</th><th>Location</th><th>Validation</th></tr>';
+        history.forEach(function(entry) {
+          html += `
+            <tr>
+              <td>${new Date(entry.TimeStamp).toLocaleString()}</td>
+              <td>${entry.StatusUpdate}</td>
+              <td>${entry.CurrentLocation}</td>
+              <td>${entry.ShipmentValidation}</td>
+            </tr>
+          `;
+        });
+        html += '</table>';
+        content.innerHTML = html;
+      }
+      modal.style.display = 'block';
+    }
+
+    function closeOrderModal() {
+      var modal = document.getElementById('order-modal');
+      modal.style.display = 'none';
+    }
+
+    // Initiate Shipment
+    function initiateShipment() {
+      var shipmentData = {
+        ShipmentID: document.getElementById('shipmentID').value || generateUUID(),
+        TrackingID: document.getElementById('trackingID').value || generateUUID(),
+        OrderRefNo: document.getElementById('orderRefNo').value,
+        ProductID: document.getElementById('productID').value,
+        CustomerID: document.getElementById('customerID').value,
+        Origin: document.getElementById('origin').value,
+        Destination: document.getElementById('destination').value,
+        Weight: document.getElementById('weight').value,
+        Dimensions: document.getElementById('dimensions').value
+      };
+
+      fetch('/ShipmentManagementSystem/Seller/InitiateShipment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(shipmentData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('shipment-result').innerText = data.message;
+      })
+      .catch(error => console.error('Error:', error));
+    }
+
+    // Track Shipment
+    function trackShipment() {
+      var trackingNumber = document.getElementById('trackingNumber').value;
+      fetch('/ShipmentManagementSystem/Seller/ShipmentStatus?TrackingID=' + encodeURIComponent(trackingNumber))
+        .then(response => response.json())
+        .then(data => {
+          displayShipmentHistory(data);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function displayShipmentHistory(history) {
+      var content = document.getElementById('tracking-result');
+      content.innerHTML = ''; // Clear previous results
+
+      if (history.error) {
+        content.innerHTML = `<p>${history.error}</p>`;
+        return;
+      }
+
+      if (history.length === 0) {
+        content.innerHTML = `<p>No tracking details found for this shipment.</p>`;
+      } else {
+        var html = `<h2>Shipment History</h2>
+                    <table>
+                      <tr>
+                        <th>Date & Time</th>
+                        <th>Status</th>
+                        <th>Location</th>
+                        <th>Validation</th>
+                      </tr>`;
+        
+        history.forEach(function(entry) {
+          html += `<tr>
+                     <td>${new Date(entry.TimeStamp).toLocaleString()}</td>
+                     <td>${entry.StatusUpdate}</td>
+                     <td>${entry.CurrentLocation}</td>
+                     <td>${entry.ShipmentValidation}</td>
+                   </tr>`;
+        });
+        
+        html += `</table>`;
+        content.innerHTML = html;
+      }
+    }
+
+    function fetchProducts() {
+  var content = document.getElementById('products-list');
+  content.innerHTML = '<div class="loader"></div>'; // Add loader again if reloaded
+
+  fetch('/ShipmentManagementSystem/Seller/Products')
+    .then(response => {
+      if (!response.ok) {
+        if (response.status === 401) {
+          // Unauthorized, redirect to login
+          window.location.href = '/ShipmentManagementSystem/Seller/Login';
+          return;
+        }
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      displayProducts(data);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      content.innerHTML = '<p>Error loading products. Please try again later.</p>';
+    })
+    .finally(() => {
+      // Ensure loader is removed regardless of success or error
+      content.querySelector('.loader')?.remove();
+    });
+}
+
+function displayProducts(products) {
+  var content = document.getElementById('products-list');
+  
+  if (!Array.isArray(products)) {
+    content.innerHTML = '<p>Error loading products. Please try again later.</p>';
+    return;
+  }
+
+  if (products.length === 0) {
+    content.innerHTML = '<p>No products available. Add new products to start selling.</p>';
+    return;
+  }
+
+  var html = '<table><tr><th>Product ID</th><th>Name</th><th>Price</th><th>Actions</th></tr>';
+  products.forEach(function(product) {
+    html += `
+      <tr>
+        <td>${product.ProductID}</td>
+        <td>${product.ProductName}</td>
+        <td>${product.Price}</td>
+        <td>
+          <button onclick="openProductModal('${product.ProductID}')">Edit</button>
+          <button onclick="deleteProduct('${product.ProductID}')">Delete</button>
+        </td>
+      </tr>
+    `;
+  });
+  html += '</table>';
+  content.innerHTML = html;
+}
+
+function fetchSmartContracts() {
+  var content = document.getElementById('contracts-content');
+  content.innerHTML = '<div class="loader"></div>'; // Add loader
+
+  fetch('/ShipmentManagementSystem/Seller/SmartContracts')
+    .then(response => {
+      if (!response.ok) {
+        if (response.status === 401) {
+          window.location.href = '/ShipmentManagementSystem/Seller/Login';
+          return;
+        }
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      displaySmartContracts(data);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      content.innerHTML = '<p>Error loading smart contracts. Please try again later.</p>';
+    })
+    .finally(() => {
+      // Ensure loader is removed regardless of success or error
+      content.querySelector('.loader')?.remove();
+    });
+}
+
+function displaySmartContracts(contracts) {
+  var content = document.getElementById('contracts-content');
+  
+  if (!Array.isArray(contracts)) {
+    content.innerHTML = '<p>Error loading smart contracts. Please try again later.</p>';
+    return;
+  }
+
+  if (contracts.length === 0) {
+    content.innerHTML = '<p>No smart contracts available.</p>';
+    return;
+  }
+
+  var html = '<table><tr><th>Contract ID</th><th>Name</th><th>Description</th></tr>';
+  contracts.forEach(function(contract) {
+    html += `
+      <tr>
+        <td>${contract.ContractID}</td>
+        <td>${contract.ContractName}</td>
+        <td>${contract.Description}</td>
+      </tr>
+    `;
+  });
+  html += '</table>';
+  content.innerHTML = html;
+}
+
+
+    // Fetch and display Profile
+    function fetchProfile() {
+      fetch('/ShipmentManagementSystem/Seller/Profile')
+        .then(response => response.json())
+        .then(data => {
+          displayProfile(data);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function displayProfile(profile) {
+      var content = document.getElementById('main-content');
+      document.getElementById('profile-loader').style.display = 'none';
+      var html = `
+        <p><strong>User ID:</strong> ${profile.UserID}</p>
+        <p><strong>Name:</strong> ${profile.UserName}</p>
+        <p><strong>Email:</strong> ${profile.Email}</p>
+        <p><strong>Contact Number:</strong> ${profile.ContactNum}</p>
+      `;
+      content.innerHTML += html;
+    }
+
+    // Utility function to generate UUID
+    function generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
+    // Close Modals when clicking outside
+    window.onclick = function(event) {
+      var productModal = document.getElementById('product-modal');
+      var orderModal = document.getElementById('order-modal');
+      if (event.target == productModal) {
+        productModal.style.display = "none";
+      }
+      if (event.target == orderModal) {
+        orderModal.style.display = "none";
+      }
+    }
+
+    // Initialize with products section
+    showSection('products');
+  </script>
+</body>
+</html>

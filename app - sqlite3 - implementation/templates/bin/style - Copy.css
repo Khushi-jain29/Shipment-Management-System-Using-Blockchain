@@ -1,0 +1,210 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.login-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+}
+
+header {
+    text-align: center;
+}
+
+.header-links a {
+    color: #004B8D;
+    text-decoration: none;
+    margin: 0 5px;
+}
+
+.login-form {
+    background-color: white;
+    padding: 20px;
+    border: 1px solid #ddd;
+    margin: 10px;
+}
+
+.login-form h2, .new-account h2 {
+    color: #004B8D;
+    border-bottom: 2px solid #004B8D;
+    padding-bottom: 5px;
+    margin-bottom: 20px;
+}
+
+input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+}
+
+button {
+    background-color: #004B8D;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #003366;
+}
+
+.login-help {
+    text-align: center;
+    padding-top: 10px;
+}
+
+.login-help a {
+    color: #004B8D;
+    text-decoration: none;
+    margin: 0 5px;
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+}
+
+.new-account {
+    background-color: #e7f1ff;
+    padding: 20px;
+    width: 100%;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.new-account p {
+    margin: 15px 0;
+}
+
+.new-account a {
+    color: #004B8D;
+    text-decoration: none;
+}
+
+.registration-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+}
+
+.registration-form {
+    background-color: white;
+    padding: 20px;
+    border: 1px solid #ddd;
+    margin: 10px;
+}
+
+.registration-form input[type="email"] {
+    /* Styles similar to input[type="text"], input[type="password"] */
+}
+
+.registration-help {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.registration-help a {
+    color: #004B8D;
+    text-decoration: none;
+}
+
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.registration-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+}
+
+header {
+    text-align: center;
+}
+
+.header-links a {
+    color: #004B8D;
+    text-decoration: none;
+    margin: 0 5px;
+}
+
+.registration-form {
+    background-color: white;
+    padding: 20px;
+    border: 1px solid #ddd;
+    margin: 10px;
+}
+
+.registration-form h2 {
+    color: #004B8D;
+    border-bottom: 2px solid #004B8D;
+    padding-bottom: 5px;
+    margin-bottom: 20px;
+}
+
+.registration-form input[type="text"],
+.registration-form input[type="password"],
+.registration-form input[type="email"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+}
+
+button {
+    background-color: #004B8D;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px; /* Added margin for spacing */
+    width: 100%; /* Make the button full width */
+}
+
+button:hover {
+    background-color: #003366;
+}
+
+.registration-help {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.registration-help a {
+    color: #004B8D;
+    text-decoration: none;
+}
+
+footer {
+    width: 100%;
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    margin-top: auto; /* Push the footer to the bottom */
+}
+
+.logo {
+    margin-bottom: 20px; /* Logo spacing */
+}

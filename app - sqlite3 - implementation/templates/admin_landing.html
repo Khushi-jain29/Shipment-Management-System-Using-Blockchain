@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard - LogisticsCo</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding-bottom: 60px; 
+      background-color: #f4f4f4;
+    }
+    .header {
+      background-color: #d52b1e;
+      color: white;
+      text-align: center;
+      padding: 10px 0;
+      position: relative;
+    }
+    .header img {
+      width: 50px;
+      height: auto;
+      position: absolute;
+      left: 20px;
+      top: 10px;
+    }
+    .top-nav {
+      background-color: #333;
+      overflow: hidden;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .top-nav a {
+      flex: 1;
+      min-width: 120px;
+      color: white;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+    .top-nav a:hover {
+      background-color: #ddd;
+      color: black;
+    }
+    .active-tab {
+      background-color: #4CAF50;
+      color: white;
+    }
+    .container {
+      padding: 20px;
+      background-color: white;
+      max-width: 1200px;
+      margin: 20px auto;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+    footer {
+      text-align: center;
+      padding: 10px;
+      background-color: #333;
+      color: white;
+      position: relative;
+      width: 100%;
+      margin-top: 20px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 10px;
+      padding: 10px 20px;
+      border-radius: 4px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      table-layout: fixed;
+    }
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      word-wrap: break-word;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    select, input[type="text"], textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    /* Code Editor Styles */
+    .code-editor {
+      width: 100%;
+      height: 300px;
+      font-family: monospace;
+      font-size: 14px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      white-space: pre;
+      overflow: auto;
+      background-color: #f9f9f9;
+    }
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      background-color: rgba(0,0,0,0.4);
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 2% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      border-radius: 8px;
+    }
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header Section -->
+  <header class="header">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Company Logo">
+    <h1>Admin Dashboard - LogisticsCo</h1>
+  </header>
+
+  <!-- Navigation Bar -->
+  <nav class="top-nav">
+    <a href="#" onclick="showSection('contracts')" id="contracts-tab">Manage Smart Contracts</a>
+    <a href="#" onclick="showSection('blockchain-validation')" id="blockchain-validation-tab">Blockchain Validation</a>
+    <a href="#" onclick="showSection('all-data')" id="all-data-tab">View All Data</a>
+    <a href="/ShipmentManagementSystem/Logout">Logout</a>
+  </nav>
+
+  <!-- Main Content Area -->
+  <div class="container">
+    <div id="main-content">
+      <h2>Welcome to LogisticsCo Admin Dashboard</h2>
+      <p>Select an option from the menu to get started.</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2024 Shipment Tracking System</p>
+  </footer>
+
+  <!-- Modals -->
+  <!-- Edit Smart Contract Modal -->
+  <div id="edit-contract-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeEditContractModal()">&times;</span>
+      <h2>Edit Smart Contract</h2>
+      <input type="hidden" id="editContractID">
+      <label for="editContractName">Contract Name:</label>
+      <input type="text" id="editContractName">
+      <label for="editDescription">Description:</label>
+      <textarea id="editDescription" rows="4"></textarea>
+      <label for="editTriggerEvent">Trigger Event:</label>
+      <input type="text" id="editTriggerEvent">
+      <label for="editCode">Code:</label>
+      <textarea id="editCode" class="code-editor"></textarea>
+      <button onclick="saveContractChanges()">Save Changes</button>
+    </div>
+  </div>
+
+  <!-- JavaScript Functions -->
+  <script>
+    function showSection(sectionId) {
+      var content = document.getElementById('main-content');
+      var tabs = document.querySelectorAll('.top-nav a');
+      tabs.forEach(tab => tab.classList.remove('active-tab'));
+      document.getElementById(sectionId + '-tab').classList.add('active-tab');
+
+      switch (sectionId) {
+        case 'contracts':
+          content.innerHTML = `
+            <h2>Manage Smart Contracts</h2>
+            <button onclick="addSmartContract()">Add New Smart Contract</button>
+            <div id="contracts-list"></div>
+          `;
+          fetchSmartContracts();
+          break;
+        case 'blockchain-validation':
+          content.innerHTML = `
+            <h2>Blockchain Validation</h2>
+            <label for="trackingIDSelect">Select Tracking ID:</label>
+            <select id="trackingIDSelect" onchange="fetchValidationData()">
+              <option value="">--Select Tracking ID--</option>
+            </select>
+            <div id="validation-results"></div>
+          `;
+          fetchTrackingIDs();
+          break;
+        case 'all-data':
+          content.innerHTML = `
+            <h2>All Tables Data</h2>
+            <div id="all-data-results"></div>
+          `;
+          fetchAllData();
+          break;
+        default:
+          content.innerHTML = '<h2>Welcome to LogisticsCo Admin Dashboard</h2><p>Select an option from the menu to get started.</p>';
+      }
+    }
+
+    // Smart Contracts Functions
+    function fetchSmartContracts() {
+      fetch('/ShipmentManagementSystem/Admin/SmartContracts')
+        .then(response => response.json())
+        .then(data => {
+          displaySmartContracts(data);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function displaySmartContracts(contracts) {
+      var content = document.getElementById('contracts-list');
+      if (contracts.length === 0) {
+        content.innerHTML = '<p>No smart contracts available.</p>';
+        return;
+      }
+      var html = '<table><tr><th>Contract ID</th><th>Name</th><th>Description</th><th>Actions</th></tr>';
+      contracts.forEach(function(contract) {
+        html += `
+          <tr>
+            <td>${contract.ContractID}</td>
+            <td>${contract.ContractName}</td>
+            <td>${contract.Description}</td>
+            <td>
+              <button onclick="editSmartContract('${contract.ContractID}')">Edit</button>
+              <button onclick="deleteSmartContract('${contract.ContractID}')">Delete</button>
+            </td>
+          </tr>
+        `;
+      });
+      html += '</table>';
+      content.innerHTML = html;
+    }
+
+    function addSmartContract() {
+      // Implement function to add a new smart contract
+      alert('Feature to add a new smart contract is under development.');
+    }
+
+    function editSmartContract(contractID) {
+      fetch('/ShipmentManagementSystem/Admin/SmartContracts')
+        .then(response => response.json())
+        .then(data => {
+          var contract = data.find(c => c.ContractID === contractID);
+          if (contract) {
+            document.getElementById('editContractID').value = contract.ContractID;
+            document.getElementById('editContractName').value = contract.ContractName;
+            document.getElementById('editDescription').value = contract.Description;
+            document.getElementById('editTriggerEvent').value = contract.TriggerEvent;
+            document.getElementById('editCode').value = contract.Code;
+            openEditContractModal();
+          } else {
+            alert('Contract not found.');
+          }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function deleteSmartContract(contractID) {
+      if (confirm('Are you sure you want to delete this smart contract?')) {
+        fetch('/ShipmentManagementSystem/Admin/SmartContracts?ContractID=' + encodeURIComponent(contractID), {
+          method: 'DELETE',
+        })
+        .then(response => response.json())
+        .then(data => {
+          alert(data.message);
+          fetchSmartContracts();
+        })
+        .catch(error => console.error('Error:', error));
+      }
+    }
+
+    function openEditContractModal() {
+      document.getElementById('edit-contract-modal').style.display = 'block';
+    }
+
+    function closeEditContractModal() {
+      document.getElementById('edit-contract-modal').style.display = 'none';
+    }
+
+    function saveContractChanges() {
+      var contractID = document.getElementById('editContractID').value;
+      var contractData = {
+        ContractID: contractID,
+        ContractName: document.getElementById('editContractName').value,
+        Description: document.getElementById('editDescription').value,
+        TriggerEvent: document.getElementById('editTriggerEvent').value,
+        Code: document.getElementById('editCode').value
+      };
+
+      fetch('/ShipmentManagementSystem/Admin/SmartContracts', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(contractData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        alert(data.message);
+        closeEditContractModal();
+        fetchSmartContracts();
+      })
+      .catch(error => console.error('Error:', error));
+    }
+
+    // Blockchain Validation Functions
+    function fetchTrackingIDs() {
+      fetch('/ShipmentManagementSystem/Admin/GetAllTrackingIDs')
+        .then(response => response.json())
+        .then(data => {
+          var select = document.getElementById('trackingIDSelect');
+          data.forEach(function(trackingID) {
+            var option = document.createElement('option');
+            option.value = trackingID;
+            option.text = trackingID;
+            select.add(option);
+          });
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function fetchValidationData() {
+      var trackingID = document.getElementById('trackingIDSelect').value;
+      if (trackingID === '') {
+        document.getElementById('validation-results').innerHTML = '';
+        return;
+      }
+      fetch('/ShipmentManagementSystem/Admin/GetValidationData?TrackingID=' + encodeURIComponent(trackingID))
+        .then(response => response.json())
+        .then(data => {
+          displayValidationData(data);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function displayValidationData(data) {
+      var content = document.getElementById('validation-results');
+      if (!data.validated_records || data.validated_records.length === 0) {
+        content.innerHTML = '<p>No validation data available.</p>';
+        return;
+      }
+
+      var is_valid = data.is_valid ? 'Yes' : 'No';
+      var html = `<p><strong>Blockchain Valid:</strong> ${is_valid}</p>`;
+      html += `<p><strong>Validation Message:</strong> ${data.validation_message}</p>`;
+
+      if (!data.is_valid) {
+        html += `<button onclick="haltShipment('${data.validated_records[0].ShipmentID}')">Halt Shipment</button>`;
+      }
+
+      html += '<table><tr><th>History ID</th><th>TimeStamp</th><th>Status Update</th><th>Current Location</th><th>Record Hash</th><th>Previous Hash</th><th>Validation Status</th></tr>';
+      data.validated_records.forEach(function(record) {
+        html += `
+          <tr>
+            <td>${record.HistoryID}</td>
+            <td>${record.TimeStamp}</td>
+            <td>${record.StatusUpdate}</td>
+            <td>${record.CurrentLocation}</td>
+            <td>${record.RecordHash}</td>
+            <td>${record.PreviousHash}</td>
+            <td>${record.ValidationStatus}</td>
+          </tr>
+        `;
+      });
+      html += '</table>';
+      content.innerHTML = html;
+    }
+
+    function haltShipment(shipmentID) {
+      if (confirm('Are you sure you want to halt this shipment?')) {
+        fetch('/ShipmentManagementSystem/Admin/HaltShipment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ShipmentID: shipmentID })
+        })
+        .then(response => response.json())
+        .then(data => {
+          alert(data.message);
+        })
+        .catch(error => console.error('Error:', error));
+      }
+    }
+
+    // View All Data Functions
+    function fetchAllData() {
+      fetch('/ShipmentManagementSystem/Admin/AllData')
+        .then(response => response.json())
+        .then(data => {
+          displayAllData(data);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function displayAllData(allData) {
+      var content = document.getElementById('all-data-results');
+      var html = '';
+      for (var tableName in allData) {
+        html += `<h3>${tableName}</h3>`;
+        if (allData[tableName].length === 0) {
+          html += '<p>No data available.</p>';
+          continue;
+        }
+        html += '<table><tr>';
+        // Table headers
+        for (var key in allData[tableName][0]) {
+          html += `<th>${key}</th>`;
+        }
+        html += '</tr>';
+        // Table rows
+        allData[tableName].forEach(function(row) {
+          html += '<tr>';
+          for (var key in row) {
+            html += `<td>${row[key]}</td>`;
+          }
+          html += '</tr>';
+        });
+        html += '</table>';
+      }
+      content.innerHTML = html;
+    }
+
+    // Initialize with contracts section
+    showSection('contracts');
+
+    // Close modal when clicking outside of it
+    window.onclick = function(event) {
+      var modal = document.getElementById('edit-contract-modal');
+      if (event.target == modal) {
+        closeEditContractModal();
+      }
+    }
+  </script>
+</body>
+</html>

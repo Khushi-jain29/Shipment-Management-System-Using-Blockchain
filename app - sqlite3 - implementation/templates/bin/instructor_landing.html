@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TA Management Suite - Instructor Portal</title>
+  <link href="https://fonts.googleapis.com/css?family=PT+Sans+Caption:400,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+  <link rel="stylesheet" href="{{ url_for('static',filename='styles/style.css') }}">
+</head>
+
+<body>
+  <!-- Top Navigation Bar -->
+  <header class="top-nav">
+    <img src="{{ url_for('static',filename='logo.png') }}" alt="University Logo" class="logo">
+    <nav class="nav-links">
+      <a href="#" onclick="showSection('tas-under-me')">TAs Under Me</a>
+      <a href="#" onclick="showSection('performance-assessment')">Performance Assessment</a>
+      <a href="#" onclick="showSection('view-assignments')">View Assignments</a>
+      <a href="http://localhost:5555/TAManagementSuite/home">Logout</a>
+    </nav>
+  </header>
+
+  <!-- Main Content Container -->
+  <div class="container" id="main-content">
+    <section class="form-container welcome-section">
+      <h2>Welcome to the Instructor Portal</h2>
+      <p>Select a feature from the top menu to begin.</p>
+    </section>
+  </div>
+
+  <footer>
+    <p>&copy; 2023 Florida Atlantic University</p>
+  </footer>
+
+  <script>
+    function showSection(section) {
+      const mainContent = document.getElementById('main-content');
+      mainContent.innerHTML = ''; // Clear current content
+
+      // Define the HTML content for each section
+      const sectionsContent = {
+        'tas-under-me': `
+          
+          <section class="form-container">
+            <h2>TAs Under Me</h2>
+            <form class="form" action="http://localhost:5555/TAManagementSuite/Instructor/TAsUnderMe" method ="get"">
+              <button class="action-button" type="submit">Review</button>
+            </form>
+          </section>
+        `,
+        'performance-assessment': `
+          
+        <section class="form-container">
+  <h2>Performance Assessment</h2>
+  <form class="form" action="http://localhost:5555/TAManagementSuite/Instructor/PerformanceAssessment" method="get">
+    <form class="form" action="http://localhost:5555/TAManagementSuite/Instructor/PerformanceAssessment" method ="get"">
+              <button class="action-button" type="submit">Review</button>
+            </form>
+    <div class="input-group">
+      <label for="rating">Rating:</label>
+      <input type="number" id="rating" name="rating" min="1" max="5" placeholder="Enter a rating from 1 to 5" required>
+    </div>
+    <div class="input-group">
+      <label for="rating">UserID:</label>
+      <input type="text" required>
+    </div>
+    <div class="input-group">
+      <label for="comments">Comments:</label>
+      <textarea id="comments" name="comments" placeholder="Enter additional comments here"></textarea>
+    </div>
+
+    <button class="action-button" type="submit">Submit Review</button>
+  </form>
+</section>
+
+        `,
+
+        
+        'view-assignments': `
+          
+          <section class="form-container">
+            <h2>View Assignments</h2>
+            <form class="form" action="http://localhost:5555/TAManagementSuite/Instructor/ViewAssignments" method ="get"">
+              <button class="action-button" type="submit">Review</button>
+            </form>
+          </section>
+        `,
+        'provide-feedback': `
+          <h2>Provide Feedback</h2>
+          <!-- Implement the functionality to provide feedback -->
+          <p>Feature under development.</p>
+        `,
+        'evaluation-notification': `
+          
+          <section class="form-container">
+            <h2>Evaluation Notification</h2>
+            <form class="form" action="http://localhost:5555/TAManagementSuite/Instructor/EvaluationNotification" method ="get"">
+              <button class="action-button" type="submit">Send</button>
+            </form>
+          </section>
+        `
+      };
+
+      // Load the selected section's content
+      mainContent.innerHTML = sectionsContent[section] || `<h2>Welcome to the Instructor Portal</h2><p>Select a feature from the top menu to begin.</p>`;
+    }
+  </script>
+</body>
+</html>

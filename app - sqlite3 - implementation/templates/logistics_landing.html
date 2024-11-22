@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Logistics Dashboard - LogisticsCo</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding-bottom: 60px;
+      background-color: #f4f4f4;
+    }
+    .header {
+      background-color: #d52b1e;
+      color: white;
+      text-align: center;
+      padding: 10px 0;
+      position: relative;
+    }
+    .header img {
+      width: 50px;
+      height: auto;
+      position: absolute;
+      left: 20px;
+      top: 10px;
+    }
+    .top-nav {
+      background-color: #333;
+      overflow: hidden;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .top-nav a {
+      flex: 1;
+      min-width: 120px;
+      color: white;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+    .top-nav a:hover {
+      background-color: #ddd;
+      color: black;
+    }
+    .active-tab {
+      background-color: #d52b1e;
+      color: white;
+    }
+    .container {
+      padding: 20px;
+      background-color: white;
+      max-width: 1200px;
+      margin: 20px auto;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+    footer {
+      text-align: center;
+      padding: 10px;
+      background-color: #333;
+      color: white;
+      position: relative;
+      width: 100%;
+      margin-top: 20px;
+    }
+    input[type="text"], input[type="password"], button, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #d52b1e;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #1c86ee;
+    }
+    .shipment-section, .alert-section, .history-section, .pod-section, .profile-section {
+      background-color: white;
+      border-radius: 6px;
+      padding: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      margin-top: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      table-layout: fixed;
+    }
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      word-wrap: break-word;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    @media (max-width: 768px) {
+      .top-nav a {
+        flex: 100%;
+        text-align: left;
+        padding-left: 20px;
+      }
+    }
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      background-color: rgba(0,0,0,0.4);
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 60%;
+      border-radius: 8px;
+    }
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header Section -->
+  <header class="header">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Company Logo">
+    <h1>Logistics Dashboard - LogisticsCo</h1>
+  </header>
+
+  <!-- Navigation Bar -->
+  <nav class="top-nav">
+    <a href="#" onclick="showSection('shipments')" id="shipments-tab">Shipments</a>
+    <a href="#" onclick="showSection('alerts')" id="alerts-tab">Alerts</a>
+    <a href="#" onclick="showSection('update-status')" id="update-status-tab">Update Status</a>
+    <a href="#" onclick="showSection('shipment-history')" id="shipment-history-tab">Shipment History</a>
+    <a href="#" onclick="showSection('pod')" id="pod-tab">Proof of Delivery</a>
+    <a href="#" onclick="showSection('profile')" id="profile-tab">Profile</a>
+    <a href="/ShipmentManagementSystem/Logout">Logout</a>
+  </nav>
+
+  <!-- Main Content Area -->
+  <div class="container">
+    <div id="main-content">
+      <!-- Dynamic content will be loaded here based on the selected section -->
+      <h2>Welcome to LogisticsCo Logistics Dashboard</h2>
+      <p>Select an option from the menu to get started.</p>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2024 Shipment Tracking System</p>
+  </footer>
+
+  <!-- Modals -->
+  <!-- Shipment Details Modal -->
+  <div id="shipment-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeShipmentModal()">&times;</span>
+      <h2>Shipment Details</h2>
+      <div id="shipment-details"></div>
+    </div>
+  </div>
+
+  <!-- JavaScript Functions -->
+  <script>
+    function showSection(sectionId) {
+      var content = document.getElementById('main-content');
+      var tabs = document.querySelectorAll('.top-nav a');
+      tabs.forEach(tab => tab.classList.remove('active-tab'));
+      document.getElementById(sectionId + '-tab').classList.add('active-tab');
+      
+      switch (sectionId) {
+        case 'shipments':
+          content.innerHTML = '<h2>All Shipments</h2><div id="shipments-list"><p>Loading shipments...</p></div>';
+          fetchShipments();
+          break;
+        case 'alerts':
+          content.innerHTML = '<h2>Alerts</h2><div id="alerts-list"><p>Loading alerts...</p></div>';
+          fetchAlerts();
+          break;
+        case 'update-status':
+          content.innerHTML = `
+            <h2>Update Shipment Status</h2>
+            <p>Enter shipment details below:</p>
+            <input type="text" id="shipmentID" placeholder="Shipment ID">
+            <input type="text" id="trackingID" placeholder="Tracking ID">
+            <input type="text" id="statusUpdate" placeholder="Status Update">
+            <input type="text" id="currentLocation" placeholder="Current Location">
+            <input type="text" id="weight" placeholder="Weight (kg)">
+            <input type="text" id="dimensions" placeholder="Dimensions (LxWxH)">
+            <textarea id="comments" placeholder="Comments"></textarea>
+            <button onclick="updateShipmentStatus()">Update Status</button>
+            <div id="update-result"></div>
+          `;
+          break;
+        case 'shipment-history':
+          content.innerHTML = `
+            <h2>Shipment History Viewer</h2>
+            <input type="text" id="historyTrackingID" placeholder="Enter Tracking ID">
+            <button onclick="viewShipmentHistory()">View History</button>
+            <div id="history-result"></div>
+          `;
+          break;
+        case 'pod':
+          content.innerHTML = `
+            <h2>Confirm Delivery (PoD)</h2>
+            <p>Enter delivery details below:</p>
+            <input type="text" id="podShipmentID" placeholder="Shipment ID">
+            <input type="text" id="podTrackingID" placeholder="Tracking ID">
+            <input type="text" id="currentLocation" placeholder="Current Location">
+            <input type="text" id="recipientName" placeholder="Recipient Name">
+            <input type="text" id="recipientSignature" placeholder="Recipient Signature">
+            <button onclick="confirmDelivery()">Confirm Delivery</button>
+            <div id="pod-result"></div>
+          `;
+          break;
+        case 'profile':
+          content.innerHTML = '<h2>Your Profile</h2><div id="profile-info"><p>Loading profile...</p></div>';
+          fetchProfile();
+          break;
+        default:
+          content.innerHTML = '<h2>Welcome</h2><p>Select an option from the menu.</p>';
+      }
+    }
+
+    // Fetch and display shipments
+    function fetchShipments() {
+      fetch('/ShipmentManagementSystem/Logistics/Shipments')
+        .then(response => response.json())
+        .then(data => {
+          displayShipments(data);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          var content = document.getElementById('shipments-list');
+          content.innerHTML = '<p>Error loading shipments. Please try again later.</p>';
+        });
+    }
+
+    function displayShipments(shipments) {
+      var content = document.getElementById('shipments-list');
+      if (!Array.isArray(shipments)) {
+        content.innerHTML = '<p>Error loading shipments. Please try again later.</p>';
+        return;
+      }
+
+      if (shipments.length === 0) {
+        content.innerHTML = '<p>No shipments available.</p>';
+        return;
+      }
+
+      var html = '<table><tr><th>Shipment ID</th><th>Status</th><th>Current Location</th><th>Estimated Delivery</th><th>Actions</th></tr>';
+      shipments.forEach(function(shipment) {
+        html += `
+          <tr>
+            <td>${shipment.ShipmentID}</td>
+            <td>${shipment.StatusUpdate || shipment.InitialStatus}</td>
+            <td>${shipment.CurrentLocation || shipment.Origin}</td>
+            <td>${shipment.EstimatedDeliveryDate || 'N/A'}</td>
+            <td>
+              <button onclick="viewShipmentDetails('${shipment.ShipmentID}')">View Details</button>
+              <button onclick="validateShipment('${shipment.TrackingID}')">Validate Blockchain</button>
+            </td>
+          </tr>
+        `;
+      });
+      html += '</table>';
+      content.innerHTML = html;
+    }
+
+    // View Shipment Details
+    function viewShipmentDetails(shipmentID) {
+      // Implement function to fetch and display shipment details
+      alert('Feature to view detailed shipment information is under development.');
+    }
+
+    // Validate Shipment Blockchain
+    function validateShipment(trackingID) {
+      fetch('/ShipmentManagementSystem/Logistics/ValidateShipment?TrackingID=' + encodeURIComponent(trackingID))
+        .then(response => response.json())
+        .then(data => {
+          if (data.is_valid) {
+            alert('Blockchain validation successful for Tracking ID: ' + trackingID);
+          } else {
+            alert('Blockchain validation failed: ' + data.validation_message);
+          }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    // Fetch and display alerts
+    function fetchAlerts() {
+      // Implement function to fetch and display alerts from the Notifications table
+      alert('Feature to display alerts is under development.');
+    }
+
+    // Update Shipment Status
+    function updateShipmentStatus() {
+      var shipmentData = {
+        ShipmentID: document.getElementById('shipmentID').value,
+        TrackingID: document.getElementById('trackingID').value,
+        StatusUpdate: document.getElementById('statusUpdate').value,
+        CurrentLocation: document.getElementById('currentLocation').value,
+        Weight: document.getElementById('weight').value,
+        Dimensions: document.getElementById('dimensions').value,
+        Comments: document.getElementById('comments').value
+      };
+
+      fetch('/ShipmentManagementSystem/Logistics/UpdateShipmentStatus', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(shipmentData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('update-result').innerText = data.message;
+      })
+      .catch(error => console.error('Error:', error));
+    }
+
+    // View Shipment History
+    function viewShipmentHistory() {
+      var trackingID = document.getElementById('historyTrackingID').value;
+      fetch('/ShipmentManagementSystem/Logistics/ShipmentHistory?TrackingID=' + encodeURIComponent(trackingID))
+        .then(response => response.json())
+        .then(data => {
+          displayShipmentHistory(data);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function displayShipmentHistory(history) {
+      var content = document.getElementById('history-result');
+      if (!Array.isArray(history)) {
+        content.innerHTML = '<p>Error loading shipment history. Please try again later.</p>';
+        return;
+      }
+
+      if (history.length === 0) {
+        content.innerHTML = '<p>No shipment history found for this Tracking ID.</p>';
+        return;
+      }
+
+      var html = '<table><tr><th>Date & Time</th><th>Status</th><th>Location</th><th>Validation</th></tr>';
+      history.forEach(function(entry) {
+        html += `
+          <tr>
+            <td>${new Date(entry.TimeStamp).toLocaleString()}</td>
+            <td>${entry.StatusUpdate}</td>
+            <td>${entry.CurrentLocation}</td>
+            <td>${entry.ShipmentValidation}</td>
+          </tr>
+        `;
+      });
+      html += '</table>';
+      content.innerHTML = html;
+    }
+
+    // Confirm Delivery (PoD)
+    function confirmDelivery() {
+      var podData = {
+        ShipmentID: document.getElementById('podShipmentID').value,
+        TrackingID: document.getElementById('podTrackingID').value,
+        CurrentLocation: document.getElementById('currentLocation').value,
+        RecipientName: document.getElementById('recipientName').value,
+        RecipientSignature: document.getElementById('recipientSignature').value
+      };
+
+      fetch('/ShipmentManagementSystem/Logistics/ConfirmDelivery', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(podData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('pod-result').innerText = data.message;
+      })
+      .catch(error => console.error('Error:', error));
+    }
+
+    // Fetch and display Profile
+    function fetchProfile() {
+      fetch('/ShipmentManagementSystem/Logistics/Profile')
+        .then(response => response.json())
+        .then(data => {
+          var content = document.getElementById('profile-info');
+          var html = `
+            <p><strong>User ID:</strong> ${data.UserID}</p>
+            <p><strong>Name:</strong> ${data.UserName}</p>
+            <p><strong>Email:</strong> ${data.Email}</p>
+            <p><strong>Contact Number:</strong> ${data.ContactNum}</p>
+          `;
+          content.innerHTML = html;
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    // Initialize with shipments section
+    showSection('shipments');
+  </script>
+</body>
+</html>

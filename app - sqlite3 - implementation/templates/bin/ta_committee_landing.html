@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TA Management Suite - TA Committee Portal</title>
+  <link href="https://fonts.googleapis.com/css?family=PT+Sans+Caption:400,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+  <link rel="stylesheet" href="{{ url_for('static',filename='styles/style.css') }}">
+</head>
+
+<body>
+  <!-- Top Navigation Bar -->
+  <header class="top-nav">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="University Logo" class="logo">
+    <nav class="nav-links">
+      <a href="#" onclick="showSection('application-review')">Application Review</a>
+      <a href="#" onclick="showSection('review-recommendations')">Review Staff Recommendations</a>
+      <a href="#" onclick="showSection('final-decision')">Final Decision</a>
+      <a href="http://localhost:5555/TAManagementSuite/home">Logout</a>
+    </nav>
+  </header>
+
+  <!-- Main Content Container -->
+  <div class="container" id="main-content">
+    <section class="form-container welcome-section">
+      <h2>Welcome to the TA Committee Portal</h2>
+      <p>Select a feature from the top menu to begin.</p>
+    </section>
+  </div>
+
+  <footer>
+    <p>&copy; 2023 Florida Atlantic University</p>
+  </footer>
+
+  <script>
+    function showSection(section) {
+      const mainContent = document.getElementById('main-content');
+      mainContent.innerHTML = ''; // Clear current content
+  
+      // Define the HTML content for each section
+      const sectionsContent = {
+        'application-review': `
+          <section class="form-container">
+            <h2>Applications Review</h2>
+            <form class="form" action="http://localhost:5555/TAManagementSuite/TACommittee/ApplicationsReview" method ="get"">
+              <button class="action-button" type="submit">Review</button>
+            </form>
+          </section>
+        `,
+        'review-recommendations': `
+          <section class="form-container">
+            <h2>Reccomondations Review</h2>
+            <form class="form" action="http://localhost:5555/TAManagementSuite/TACommittee/ReccomendationsReview" method ="get"">
+              <button class="action-button" type="submit">Review</button>
+            </form>
+          </section>
+        `,
+        'final-decision': `
+          
+          <section class="form-container">
+            <h2>Final Decision on TA Assignments</h2>
+            <form class="form" action="http://localhost:5555/TAManagementSuite/TACommittee/FinalDecisions" method ="get"">
+              <button class="action-button" type="submit">Review</button>
+            </form>
+          </section>
+        `,
+        'data-export': `
+          <h2>Data Export</h2>
+          <!-- Implement the functionality for exporting data -->
+          <p>Feature under development.</p>
+        `,
+        'generate-reports': `
+          <h2>Generate Reports</h2>
+          <!-- Implement the functionality for generating reports -->
+          <p>Feature under development.</p>
+        `
+      };
+  
+      // Load the selected section's content
+      mainContent.innerHTML = sectionsContent[section] || `<h2>Welcome to the TA Committee Portal</h2><p>Select a feature from the top menu to begin.</p>`;
+    }
+  </script>
+</body>
+</html>

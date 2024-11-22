@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TA Management Suite - Department Staff</title>
+  <link href="https://fonts.googleapis.com/css?family=PT+Sans+Caption:400,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+</head>
+
+<body>
+  <!-- Top Navigation Bar -->
+  <header class="top-nav">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="University Logo" class="logo">
+    <nav class="nav-links">
+      <a href="#" onclick="showSection('show-instructors')">Show Instructors</a>
+      <a href="#" onclick="showSection('course-management')">Course Management</a>
+      <a href="#" onclick="showSection('preliminary-matching')">Preliminary Matching</a>
+      <a href="#" onclick="showSection('data-review')">Data Review</a>
+      <a href="#" onclick="showSection('send-preliminary-matches')">Send Preliminary Matches</a>
+      <a href="http://localhost:5555/TAManagementSuite/home">Logout</a>
+    </nav>
+  </header>
+
+  <!-- Main Content Container -->
+  <div class="container" id="main-content">
+    <section class="form-container welcome-section">
+      <h2>Welcome to the Department Staff Portal</h2>
+      <p>Select a feature from the top menu to begin.</p>
+    </section>
+  </div>
+
+  <footer>
+    <p>&copy; 2023 Florida Atlantic University</p>
+  </footer>
+
+  <script>
+    function showSection(section) {
+      const mainContent = document.getElementById('main-content');
+      mainContent.innerHTML = ''; // Clear current content
+  
+      // Define the HTML content for each section
+      const sectionsContent = {
+        'show-instructors': `
+          <h2>Show Instructors</h2>
+          <form class="form" action="http://localhost:5555/TAManagementSuite/DepartmentStaff/ShowInstructors" method="get">
+          <button type="submit">List</button>
+          </form>
+        `,
+        'course-management': `
+          <h2>Course Management</h2>
+          <form class="form" action="http://localhost:5555/TAManagementSuite/DepartmentStaff/AddCourse" method="get">
+          <input type="text" placeholder="Course ID" name="course_id">
+          <input type="text" placeholder="Course Name" name="course_name">
+          <input type="text" placeholder="Description" name="description">
+          <input type="text" placeholder="InstructorID" name="instructor_id">
+          <input type="number" placeholder="Number of TAs Needed" name="num_ta_req">
+          <input type="text" placeholder="Skills Required" name="skills_req">
+          <button type="submit">Add Course</button>
+          </form>
+        `,
+        'preliminary-matching': `
+        <h2>Preliminary Matching</h2>
+        <button onclick="confirmPreliminaryMatching()">Run Matching Algorithm</button>
+        `,
+
+        'data-review': `
+          <h2>Data Review</h2>
+          <!-- Implement the functionality for data review -->
+          <p>No new data to review.</p>
+        `,
+        'update-course-list': `
+          <h2>Update Course List</h2>
+          <!-- Implement the form or functionality to update the course list -->
+          <form method="post" action="/update-course-list-endpoint">
+            <textarea name="course-list" placeholder="Updated course list"></textarea>
+            <button">Update List</button>
+          </form>
+        `,
+        'send-preliminary-matches': `
+          <h2>Send Preliminary Matches</h2>
+          <!-- Implement the functionality to send preliminary matches -->
+          <button onclick="sendPreliminaryMatches()">Send Matches</button>
+        `
+      };
+  
+      // Load the selected section's content
+      mainContent.innerHTML = sectionsContent[section] || `<h2>Welcome to the Department Staff Portal</h2><p>Select a feature from the top menu to begin.</p>`;
+    }
+  
+    function runPreliminaryMatching() {
+      // Placeholder function for running the preliminary matching algorithm
+      alert('Running the preliminary matching algorithm. Course Assignments Updated.');
+    }
+    function confirmPreliminaryMatching() {
+      var confirmMatch = confirm("Are you sure you want to run the matching algorithm?");
+      if (confirmMatch) {
+        // If the user clicked "OK", navigate to the Flask route
+        window.location.href = "http://localhost:5555/TAManagementSuite/DepartmentStaff/RunPreliminaryMatching";
+      } 
+    }
+
+    function sendPreliminaryMatches() {
+      // Placeholder function for sending preliminary matches
+      alert('Sending preliminary matches to the TA Committee in mail.');
+      window.location.href = "http://localhost:5555/TAManagementSuite/DepartmentStaff/SendPreliminaryMatching";
+      alert('Sent preliminary matches to the TA Committee in mail.');
+    }
+  </script>
+  
+  
+</body>
+</html>

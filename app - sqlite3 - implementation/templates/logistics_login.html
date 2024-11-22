@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Login - Shipment Tracking System</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Arial', sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
+    .header { background-color: #d52b1e; padding: 10px 20px; color: white; text-align: center; }
+    .header img { width: 100px; height: auto; }
+    .top-nav { background-color: #d52b1e; padding: 10px 0; text-align: center; }
+    .top-nav a { color: white; margin: 0 10px; text-decoration: none; font-weight: 700; }
+    .top-nav a:hover { opacity: 0.7; }
+    .container { padding: 20px; background-color: white; max-width: 600px; margin: 30px auto; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-radius: 5px; }
+    .login-section { text-align: center; padding: 50px 0; }
+    .login-section h2 { color: #333; margin-bottom: 20px; }
+    .login-section form { max-width: 300px; margin: auto; }
+    .login-section input { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; }
+    .login-section button { width: 100%; padding: 10px; color: white; background-color: #007bff; border: none; border-radius: 4px; cursor: pointer; }
+    .login-section button:hover { background-color: #0056b3; }
+    .login-section .alternate { margin-top: 15px; }
+    .login-section .alternate a { color: #007bff; text-decoration: none; }
+    footer { text-align: center; padding: 10px; background-color: #333; color: white; }
+  </style>
+</head>
+<body>
+  <!-- Top Navigation Bar -->
+  <div class="header">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Company Logo">
+    <h1>LogisticsCo - Shipment Tracking and Management System</h1>
+  </div>
+
+  <!-- Navigation Links -->
+  <div class="top-nav">
+    <a href="{{ url_for('home_page') }}">Home</a>
+    <a href="#track-shipment">Track Shipment</a>
+    <a href="#services">Services</a>
+    <a href="#support">Support</a>
+    <a href="#contact">Contact Us</a>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="container" id="main-content">
+    <div class="login-section">
+      <h2>Logistics Login</h2>
+      <form id="loginForm" action="{{ url_for('logistics_login') }}" method="POST">
+        <input type="text" id="UserID" name="UserID" placeholder="UserID" required>
+        <input type="password" id="Password" name="Password" placeholder="Password" required>
+        <button type="submit">Login</button>
+      </form>
+      <div class="alternate">
+        <p>New to Logistics Navigator? <a href="">Sign up now</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2024 Shipment Tracking System</p>
+  </footer>
+
+  <script>
+    document.getElementById('loginForm').onsubmit = function(event) {
+      // Preventing default submit action to observe data
+      console.log("Submitting form with POST method");
+    };
+  </script>
+</body>
+</html>

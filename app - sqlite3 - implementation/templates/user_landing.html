@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Consumer Dashboard - LogisticsCo - Shipment Tracking and Management System</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    .header {
+      background-color: #d52b1e;
+      color: white;
+      text-align: center;
+      padding: 10px 0;
+      position: relative;
+    }
+    .header img {
+      width: 50px;
+      height: auto;
+      position: absolute;
+      left: 20px;
+      top: 10px;
+    }
+    .top-nav {
+      background-color: #333;
+      overflow: hidden;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .top-nav a {
+      flex: 1;
+      min-width: 120px;
+      display: block;
+      color: white;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+    .top-nav a:hover {
+      background-color: #ddd;
+      color: black;
+    }
+    .active-tab {
+      background-color: #4CAF50;
+      color: white;
+    }
+    .container {
+      padding: 20px;
+      background-color: white;
+      max-width: 1200px;
+      margin: 20px auto;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+    footer {
+      text-align: center;
+      padding: 10px;
+      background-color: #333;
+      color: white;
+      position: fixed;
+      width: 100%;
+      bottom: 0;
+    }
+    input[type="text"], input[type="password"], button, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .shipment-history, .profile-section, .settings-section, .support-section, .products-section {
+      background-color: white;
+      border-radius: 6px;
+      padding: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      margin-top: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    @media (max-width: 768px) {
+      .top-nav a {
+        flex: 100%;
+        text-align: left;
+        padding-left: 20px;
+      }
+      footer {
+        position: static;
+      }
+    }
+    /* Loader Styles */
+    .loader {
+      border: 8px solid #f3f3f3;
+      border-top: 8px solid #4CAF50;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+      margin: 50px auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header Section -->
+  <header class="header">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Company Logo">
+    <h1>Consumer Dashboard - LogisticsCo</h1>
+  </header>
+
+  <!-- Navigation Bar -->
+  <nav class="top-nav">
+    <a href="#" onclick="showSection('track-shipment')" id="track-shipment-tab">Track Shipment</a>
+    <a href="#" onclick="showSection('shipment-history')" id="shipment-history-tab">Order History</a>
+    <a href="#" onclick="showSection('view-products')" id="view-products-tab">View Products</a>
+    <a href="#" onclick="showSection('notifications')" id="notifications-tab">Notifications</a>
+    <a href="#" onclick="showSection('profile')" id="profile-tab">Profile</a>
+    <a href="#" onclick="showSection('settings')" id="settings-tab">Settings</a>
+    <a href="#" onclick="showSection('support')" id="support-tab">Support</a>
+    <a href="/ShipmentManagementSystem/home">Logout</a>
+  </nav>
+
+  <!-- Main Content Area -->
+  <div class="container">
+    <div id="main-content">
+      <!-- Dynamic content will be loaded here based on the selected section -->
+      <h2>Welcome to LogisticsCo</h2>
+      <p>Select an option from the menu to get started.</p>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2024 Shipment Tracking System</p>
+  </footer>
+
+  <script>
+    function showSection(sectionId) {
+      var content = document.getElementById('main-content');
+      var tabs = document.querySelectorAll('.top-nav a');
+      tabs.forEach(tab => tab.classList.remove('active-tab'));
+      document.getElementById(sectionId + '-tab').classList.add('active-tab');
+      
+      switch (sectionId) {
+        case 'track-shipment':
+          content.innerHTML = ` 
+            <h2>Track Your Shipment</h2>
+            <p>Enter your tracking number below to view the status of your shipment.</p>
+            <input type="text" id="trackingNumber" placeholder="Enter Tracking Number">
+            <button onclick="trackShipment()">Track</button>
+            <div id="tracking-result"></div>
+          `;
+          break;
+        case 'shipment-history':
+          content.innerHTML = '<h2>Your Order History</h2><div class="loader" id="history-loader"></div>';
+          fetchOrderHistory();
+          break;
+        case 'view-products':
+          content.innerHTML = '<h2>Available Products</h2><div class="loader" id="products-loader"></div>';
+          fetchProducts();
+          break;
+        case 'notifications':
+          content.innerHTML = '<h2>Your Notifications</h2><div class="loader" id="notifications-loader"></div>';
+          fetchNotifications();
+          break;
+        case 'profile':
+          content.innerHTML = '<h2>Your Profile</h2><div class="loader" id="profile-loader"></div>';
+          fetchUserProfile();
+          break;
+        case 'settings':
+          content.innerHTML = '<h2>Settings</h2><div class="loader" id="settings-loader"></div>';
+          fetchUserSettings();
+          break;
+        case 'support':
+          content.innerHTML = `
+            <h2>Support</h2>
+            <p>If you need assistance, please fill out the form below:</p>
+            <button onclick="openSupportModal()">Contact Support</button>
+          `;
+          break;
+        default:
+          content.innerHTML = '<h2>Welcome</h2><p>Select an option from the menu.</p>';
+      }
+    }
+
+    // Function to fetch and display shipment tracking information
+    function trackShipment() {
+      var trackingNumber = document.getElementById('trackingNumber').value;
+      fetch('/ShipmentManagementSystem/Customer/TrackShipment?trackingNumber=' + encodeURIComponent(trackingNumber))
+        .then(response => response.json())
+        .then(data => {
+          displayShipmentHistory(data);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function displayShipmentHistory(history) {
+      var content = document.getElementById('tracking-result');
+      content.innerHTML = ''; // Clear previous results
+
+      if (history.error) {
+        content.innerHTML = `<p>${history.error}</p>`;
+        return;
+      }
+
+      if (history.length === 0) {
+        content.innerHTML = `<p>No tracking details created for this shipment.</p>`;
+      } else {
+        var html = `<h2>Delivery by Your Carrier</h2>
+                    <p>Tracking ID: ${history[0].TrackingID}</p>
+                    <table>
+                      <tr>
+                        <th>Date & Time</th>
+                        <th>Status</th>
+                        <th>Current Location</th>
+                        <th>Shipment Validation</th>
+                      </tr>`;
+        
+        history.forEach(function(entry) {
+          html += `<tr>
+                     <td>${new Date(entry.TimeStamp).toLocaleString()}</td>
+                     <td>${entry.StatusUpdate}</td>
+                     <td>${entry.CurrentLocation}</td>
+                     <td>${entry.ShipmentValidation}</td>
+                   </tr>`;
+        });
+        
+        html += `</table>`;
+        content.innerHTML = html;
+      }
+    }
+
+    // Fetch and display Order History
+    function fetchOrderHistory() {
+      fetch('/ShipmentManagementSystem/Customer/OrderHistory')
+        .then(response => response.json())
+        .then(data => {
+          displayOrderHistory(data);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function displayOrderHistory(shipments) {
+      var content = document.getElementById('main-content');
+      document.getElementById('history-loader').style.display = 'none';
+      if (shipments.length === 0) {
+        content.innerHTML += '<p>You have no orders yet.</p>';
+        return;
+      }
+      var html = '<table><tr><th>Shipment ID</th><th>Tracking ID</th><th>Order Ref No</th><th>Product Name</th><th>Status</th><th>Estimated Delivery</th></tr>';
+      shipments.forEach(function(shipment) {
+        html += `<tr>
+                   <td>${shipment.ShipmentID}</td>
+                   <td>${shipment.TrackingID}</td>
+                   <td>${shipment.OrderRefNo}</td>
+                   <td>${getProductName(shipment.ProductID)}</td>
+                   <td>${shipment.InitialStatus}</td>
+                   <td>${shipment.EstimatedDeliveryDate}</td>
+                 </tr>`;
+      });
+      html += '</table>';
+      content.innerHTML += html;
+    }
+
+    // Helper function to get product name (You may need to fetch this data from the server)
+    function getProductName(productId) {
+      // This is a placeholder. Ideally, you should fetch the product name from the server.
+      return productId;
+    }
+
+    // Fetch and display Products
+    function fetchProducts() {
+      fetch('/ShipmentManagementSystem/Customer/ViewProducts')
+        .then(response => response.json())
+        .then(data => {
+          displayProducts(data);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function displayProducts(products) {
+      var content = document.getElementById('main-content');
+      document.getElementById('products-loader').style.display = 'none';
+      if (products.length === 0) {
+        content.innerHTML += '<p>No products available at the moment.</p>';
+        return;
+      }
+      var html = '<div class="products-section">';
+      products.forEach(function(product) {
+        html += `
+          <div class="product-card" style="border:1px solid #ccc; padding:15px; margin:10px; border-radius:8px;">
+            <img src="${product.ProductImageUrl}" alt="${product.ProductName}" style="width:100px; height:auto;">
+            <h3>${product.ProductName}</h3>
+            <p>${product.ProductDescription}</p>
+            <p><strong>Price:</strong> ₹${product.Price}</p>
+            <button onclick="viewProductDetails('${product.ProductID}')">View Details</button>
+          </div>
+        `;
+      });
+      html += '</div>';
+      content.innerHTML += html;
+    }
+
+    // Fetch and display Notifications
+    function fetchNotifications() {
+      fetch('/ShipmentManagementSystem/Customer/Notifications')
+        .then(response => response.json())
+        .then(data => {
+          displayNotifications(data);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function displayNotifications(notifications) {
+      var content = document.getElementById('main-content');
+      document.getElementById('notifications-loader').style.display = 'none';
+      if (notifications.length === 0) {
+        content.innerHTML += '<p>No new notifications.</p>';
+        return;
+      }
+      var html = '<ul>';
+      notifications.forEach(function(notification) {
+        html += `<li>${notification.Message} - <em>${notification.TimeStamp}</em></li>`;
+      });
+      html += '</ul>';
+      content.innerHTML += html;
+    }
+
+    // Fetch and display User Profile
+    function fetchUserProfile() {
+      fetch('/ShipmentManagementSystem/Customer/Profile')
+        .then(response => response.json())
+        .then(data => {
+          displayUserProfile(data);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function displayUserProfile(profile) {
+      var content = document.getElementById('main-content');
+      document.getElementById('profile-loader').style.display = 'none';
+      var html = `
+        <p><strong>User ID:</strong> ${profile.UserID}</p>
+        <p><strong>Name:</strong> ${profile.UserName}</p>
+        <p><strong>Email:</strong> ${profile.Email}</p>
+        <p><strong>Contact Number:</strong> ${profile.ContactNum}</p>
+      `;
+      content.innerHTML += html;
+    }
+
+    // Fetch and display User Settings
+    function fetchUserSettings() {
+      content = document.getElementById('main-content');
+      document.getElementById('settings-loader').style.display = 'none';
+      var html = `
+        <form id="settings-form">
+          <label for="newPassword">Change Password:</label>
+          <input type="password" id="newPassword" name="newPassword" required>
+
+          <label for="confirmPassword">Confirm Password:</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" required>
+
+          <button type="submit">Update Password</button>
+        </form>
+        <div id="settings-response"></div>
+      `;
+      content.innerHTML += html;
+
+      document.getElementById('settings-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        updatePassword();
+      });
+    }
+
+    function updatePassword() {
+      var newPassword = document.getElementById('newPassword').value;
+      var confirmPassword = document.getElementById('confirmPassword').value;
+
+      if (newPassword !== confirmPassword) {
+        document.getElementById('settings-response').innerText = 'Passwords do not match.';
+        return;
+      }
+
+      fetch('/ShipmentManagementSystem/Customer/UpdatePassword', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newPassword: newPassword })
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('settings-response').innerText = data.message;
+      })
+      .catch(error => console.error('Error:', error));
+    }
+
+    // Support Modal Functions
+    function openSupportModal() {
+      var modal = document.getElementById("supportModal");
+      modal.style.display = "block";
+    }
+
+    function closeSupportModal() {
+      var modal = document.getElementById("supportModal");
+      modal.style.display = "none";
+    }
+
+    // Handle Support Form Submission
+    document.getElementById('support-form')?.addEventListener('submit', function(event) {
+      event.preventDefault();
+      var subject = document.getElementById('supportSubject').value;
+      var message = document.getElementById('supportMessage').value;
+
+      fetch('/ShipmentManagementSystem/Customer/Support', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subject: subject, message: message })
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('support-response').innerText = data.message;
+        document.getElementById('support-form').reset();
+      })
+      .catch(error => console.error('Error:', error));
+    });
+
+    // Initialize with welcome content
+    showSection('track-shipment');
+  </script>
+</body>
+</html>

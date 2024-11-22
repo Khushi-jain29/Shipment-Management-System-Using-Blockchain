@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Server Results</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+  <style>
+.form-container {
+    background-color: white;
+    padding: 20px;
+    border: 1px solid #ddd;
+    margin: 10px;
+    width: calc(100% - 40px); /* Subtract padding and margin */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow-x: auto; /* Allows horizontal scrolling */
+}
+
+table {
+    width: 100%;
+    max-width: 100%; /* Ensure table is not wider than its container */
+    border-collapse: collapse;
+    table-layout: fixed; /* Optional: to ensure consistent column sizing */
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    word-wrap: break-word; /* Ensures text wraps and doesn't overflow */
+}
+
+
+    th {
+      background-color: #004B8D;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    .export-button {
+      background-color: #004B8D;
+      color: white;
+      padding: 10px 20px;
+      margin: 20px 0;
+      border: none;
+      cursor: pointer;
+    }
+
+    .export-button:hover {
+      background-color: #003366;
+    }
+  </style>
+</head>
+<body>
+  <header class="top-nav">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="University Logo" class="logo">
+    <!-- Other navigation links if necessary -->
+  </header>
+
+  <div class="container">
+    <div class="form-container">
+        <h2>{{ title }}</h2>
+      <table id="results-table">
+        <thead>
+            <tr>
+              {% if table_data %}
+                {% for header in table_data[0].keys() %}
+                  <th>{{ header }}</th>
+                {% endfor %}
+              {% endif %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in table_data %}
+              <tr>
+                {% for cell in row.values() %}
+                  <td>{{ cell }}</td>
+                {% endfor %}
+              </tr>
+            {% endfor %}
+          </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="form-container">
+      <h2>Results</h2>
+      <button class="export-button" onclick="exportTableToCSV('results.csv')">Export to CSV</button>
+      <table id="results-table">
+        <!-- Table content as before -->
+      </table>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2023 Florida Atlantic University</p>
+  </footer>
+
+  <script>
+    function exportTableToCSV(filename) {
+      var csv = [];
+      var rows = document.querySelectorAll("table tr");
+      
+      for (var i = 0; i < rows.length; i++) {
+        var row = [], cols = rows[i].querySelectorAll("td, th");
+        
+        for (var j = 0; j < cols.length; j++) 
+            row.push('"' + cols[j].innerText + '"');
+        
+        csv.push(row.join(","));        
+      }
+
+      // Download CSV file
+      downloadCSV(csv.join("\n"), filename);
+    }
+
+    function downloadCSV(csv, filename) {
+      var csvFile;
+      var downloadLink;
+
+      // CSV file
+      csvFile = new Blob([csv], {type: "text/csv"});
+
+      // Download link
+      downloadLink = document.createElement("a");
+
+      // File name
+      downloadLink.download = filename;
+
+      // Create a link to the file
+      downloadLink.href = window.URL.createObjectURL(csvFile);
+
+      // Hide download link
+      downloadLink.style.display = "none";
+
+      // Add the link to DOM
+      document.body.appendChild(downloadLink);
+
+      // Click download link
+      downloadLink.click();
+    }
+  </script>
+</body>
+</html>

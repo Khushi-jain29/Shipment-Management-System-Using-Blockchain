@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Registration - Shipment Tracking System</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Arial', sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
+        .header { background-color: #d52b1e; padding: 10px 20px; color: white; text-align: center; }
+        .header img { width: 100px; height: auto; }
+        .container { padding: 20px; background-color: white; max-width: 600px; margin: 30px auto; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-radius: 5px; }
+        .form-container { text-align: center; padding: 20px 0; }
+        .form-container h2 { color: #333; margin-bottom: 20px; }
+        .form-container form { max-width: 300px; margin: auto; }
+        .form-container input, .form-container select { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; }
+        .form-container button { width: 100%; padding: 10px; color: white; background-color: #007bff; border: none; border-radius: 4px; cursor: pointer; }
+        .form-container button:hover { background-color: #0056b3; }
+        .form-container .alternate a { color: #007bff; text-decoration: none; }
+        footer { text-align: center; padding: 10px; background-color: #333; color: white; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="logo.png" alt="Logistics Navigator Logo">
+        <h1>LogisticsCo - Shipment Tracking System</h1>
+    </div>
+
+    <div class="container">
+        <section class="form-container">
+            <h2>Register for a New Account</h2>
+            <form action="/register" method="post">
+                <input type="text" name="userID" placeholder="UserID" required>
+                <input type="text" name="userName" placeholder="Username" required>
+                <select name="userType" required>
+                    <option value="" disabled selected>Select User Type</option>
+                    <option value="Consumer">Consumer</option>
+                    <option value="Seller">Seller</option>
+                    <option value="Logistics">Logistics</option>
+                    <option value="Administrator">Administrator</option>
+                </select>
+                <input type="password" name="password" placeholder="Password" required>
+                <input type="password" name="confirmPassword" placeholder="Confirm Password" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="text" name="contactNum" placeholder="Contact Number" required>
+                <input type="text" name="companyID" placeholder="Company ID (Optional)">
+                <button type="submit">Register</button>
+            </form>
+            <div class="alternate">
+                <p>Already have an account? <a href="#login">Sign in</a></p>
+            </div>
+        </section>
+
+        <footer>
+            <p>&copy; 2024 LogisticsCo. Shipment Tracking System</p>
+        </footer>
+    </div>
+
+    <script>
+        // Add any JavaScript or form handling logic here
+    </script>
+</body>
+</html>

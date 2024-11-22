@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shipment Tracking System</title>
+  <style>
+    /* Your existing CSS styles */
+    * { box-sizing: border-box; }
+    body { font-family: 'Arial', sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
+    .header { background-color: #d52b1e; padding: 10px 20px; color: white; text-align: center; }
+    .header img { width: 100px; height: auto; }
+    .top-nav { background-color: #d52b1e; padding: 10px 0; text-align: center; }
+    .top-nav a { color: white; margin: 0 10px; text-decoration: none; font-weight: 700; }
+    .top-nav a:hover { opacity: 0.7; }
+    .container { padding: 20px; background-color: white; max-width: 800px; margin: 30px auto; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .welcome-section { text-align: center; padding: 50px 0; }
+    footer { text-align: center; padding: 10px; background-color: #333; color: white; }
+    .login-buttons { display: flex; justify-content: center; margin-top: 20px; }
+    .login-button { background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; margin: 0 5px; border-radius: 5px; }
+    .login-button:hover { background-color: #0056b3; }
+  </style>
+</head>
+<body>
+  <!-- Top Navigation Bar -->
+  <div class="header">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Company Logo">
+    <h1>ShipSecure - 
+      Blockchain-Enhanced Shipment Management and Tracking System</h1>
+  </div>
+
+  <!-- Navigation Links -->
+  <div class="top-nav">
+    <a href="/ShipmentManagementSystem/home">Home</a>
+    <a href="track" id="track-shipment-link">Track Shipment</a> <!-- ID for JavaScript interaction -->
+    <a href="#contact">Contact Us</a>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="container" id="main-content">
+    <div class="welcome-section">
+      <h2>Welcome to ShipSecure</h2>
+      <p>Our system allows customers, sellers, and logistics providers to manage and track shipments seamlessly. Sign in to access your dashboard.</p>
+    </div>
+
+    <div class="login-buttons" id="login-section"> <!-- ID for toggling display -->
+      <a href="/ShipmentManagementSystem/Customer/Login" class="login-button">Consumer Login</a>
+      <a href="/ShipmentManagementSystem/Seller/Login" class="login-button">Seller Login</a>
+      <a href="/ShipmentManagementSystem/Logistics/Login" class="login-button">Logistics Login</a>
+      <a href="/ShipmentManagementSystem/Admin/Login" class="login-button">Admin Login</a>
+    </div>
+  </div>
+
+  <!-- Tracking Form Section (Initially Hidden) -->
+  <div class="container" id="tracking-section" style="display: none;">
+    <div class="welcome-section">
+      <h2>Track Your Consignment</h2>
+      <p>Enter your tracking number below to view the status of your shipment.</p>
+      <form id="trackingForm">
+        <label for="trackingNumber">Enter tracking number:</label>
+        <input type="text" id="trackingNumber" name="trackingNumber" required>
+        <input type="submit" value="Track">
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2024 LogisticsCo. Shipment Tracking System</p>
+  </footer>
+
+  <script>
+    // JavaScript for toggling sections
+    document.getElementById('track-shipment-link').addEventListener('click', function(event) {
+      event.preventDefault();
+      document.getElementById('login-section').style.display = 'none'; // Hide the login section
+      document.getElementById('tracking-section').style.display = 'block'; // Show the tracking section
+    });
+
+    document.getElementById('trackingForm').onsubmit = function(event) {
+      event.preventDefault();
+      var trackingNumber = document.getElementById('trackingNumber').value;
+      // Logic to handle the tracking number submission
+      alert('Tracking number submitted: ' + trackingNumber);
+    };
+  </script>
+</body>
+</html>
